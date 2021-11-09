@@ -21,34 +21,40 @@ const Keyboard = {
         this.elements.keysContainer = document.createElement("div");
 
         // Setup main elements 
-        this.elements.main.classList.add("keyboard", "1keyboard--hidden");
+        this.elements.main.classList.add("keyboard", "keyboard--hidden");
         this.elements.keysContainer.classList.add("keyboard-keys");
         this.elements.keysContainer.appendChild(this._createKeys());
+
+        this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard-key")
 
         // Add to DOM
         this.elements.main.appendChild(this.elements.keysContainer);
         document.body.appendChild(this.elements.main);
+
+        // Automatically use keyboard for elements with .use-keyboard-input
+        document.querySelectorAll(".use-keyboard-input").forEach(element => {
+            element.addEventListener("focus", () => {
+                this.open(element.value, currentValue => {
+                    element.value = currentValue;
+                });
+            });
+        });
     },
 
     _createKeys() {
         const fragment = document.createDocumentFragment();
         const keyLayout = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "backspace",
-            
             "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", 
-
-            "caps", "a", "s", "d", "f", "g", "h", "j", "k", "k", "enter", 
-
+            "caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", "enter", 
             "done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "?", 
-
             "space"
-         ];
+        ];
 
         // Creates HTML for an icon
-        //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX SEE LINE 50 for weird behaviour causeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         const createIconHTML = (icon_name) => {
-            return '<i class="material-icons">${icon_name}</i>';
-         };
+            return `<i class="material-icons">${icon_name}</i>`        
+        };
 
         keyLayout.forEach(key => {
             const keyElement = document.createElement("button");
@@ -109,7 +115,7 @@ const Keyboard = {
 
                     keyElement.addEventListener("click", () => {
                         this.close();
-                        this._triggerEvent("oninput");
+                        this._triggerEvent("onclose");
                     })
 
                     break;
@@ -136,23 +142,36 @@ const Keyboard = {
     },
 
     _triggerEvent(handlerName) {
-        console.log("Event Triggered! Event Name: " + handlerName);
+        if (typeof this.eventHandlers[handlerName == "function"]) {
+            this.eventHandlers[handlerName](this.properties.value);
+        }
     },
 
-    toggleCapslock () {
-        console.log("Caps Lock Toggled!");
+    _toggleCapsLock() {
+        this.properties.capsLock = !this.properties.capsLock;
 
+        for (const key of this.elements.keys) {
+            if (key.childElementCount === 0) {
+                key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase();
+            }
+        }
     },
 
     open(initialValue, oninput, onclose) {
-
+        this.properties.value = initialValue || "";
+        this.eventHandlers.oninput = oninput;
+        this.eventHandlers.onclose = onclose;
+        this.elements.main.classList.remove("keyboard--hidden")
     },
 
     close() {
-
+        this.properties.value = "";
+        this.eventHandlers.oninput = oninput;
+        this.eventHandlers.onclose = onclose;
+        this.elements.main.classList.add("keyboard--hidden");
     }
 };
 
 window.addEventListener("DOMContentLoaded", function () {
     Keyboard.init();
-})
+});
