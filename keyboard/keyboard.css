@@ -1,8 +1,16 @@
+* {
+    font-family: 'Inconsolata', monospace;
+}
+
+h1 {
+    color: #79B4B7;
+}
+
 textarea {
-    position: absolute;
-    top: 130px;
-    right: 30px;
-    width: 300px;
+    margin: 40px;
+    width: 400px;
+    height: 150px;
+    background: #FEFBF3;
 }
 
 .keyboard {
@@ -11,8 +19,8 @@ textarea {
     bottom: 0;
     width: 100%;
     padding: 5px 0;
-    background: #004134;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    background: #9D9D9D;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     user-select: none;
     transition: bottom 0.4s;
 }
